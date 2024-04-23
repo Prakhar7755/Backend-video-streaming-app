@@ -3,10 +3,7 @@
   "version": "1.0.0",
   "author": "Prakhar",
   "main": "index.js",
-  "devDependencies": {
-    "dotenv": "^16.4.5",
-    "nodemon": "^3.1.0"
-  },
+  "type": "module",
   "description": "",
   "keywords": [
     "javascript",
@@ -16,5 +13,9 @@
   "scripts": {
     "dev": "nodemon src/index.js"
   },
-  "type": "module"
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5"
+  }
 }
