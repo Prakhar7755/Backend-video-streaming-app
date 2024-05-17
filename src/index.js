@@ -2,8 +2,9 @@
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";
+
 dotenv.config({
-  path: "./env",
+  path: "./.env",
 });
 
 connectDB()
@@ -18,13 +19,16 @@ connectDB()
 
 /*
 import express from "express"
-const app = express()
-( async () => {
+immport {DB_NAME} from "./constants"
+const app = express();
+
+
+;( async () => {
     try {
         await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
-        app.on("errror", (error) => {
+        app.on("error", (error) => {
             console.log("ERRR: ", error);
-            throw error
+            throw error;
         })
 
         app.listen(process.env.PORT, () => {
@@ -32,8 +36,8 @@ const app = express()
         })
 
     } catch (error) {
-        console.error("ERROR: ", error)
-        throw err
+        console.error("ERROR: ", error);
+        throw error;
     }
 })()
 
