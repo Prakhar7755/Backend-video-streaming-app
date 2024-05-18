@@ -15,11 +15,12 @@ connectDB()
   })
   .catch((err) => {
     console.log("MONGODB connection failed !!! ", err);
+    throw err;
   });
 
 /*
 import express from "express"
-immport {DB_NAME} from "./constants"
+import {DB_NAME} from "./constants"
 const app = express();
 
 
@@ -27,7 +28,7 @@ const app = express();
     try {
         await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
         app.on("error", (error) => {
-            console.log("ERRR: ", error);
+            console.log("ERROR: ", error);
             throw error;
         })
 
