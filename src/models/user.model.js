@@ -2,8 +2,11 @@ import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+// Define the schema for the user model
+
 const userSchema = new Schema(
   {
+    // Username of the user
     username: {
       type: String,
       required: true,
@@ -12,6 +15,7 @@ const userSchema = new Schema(
       trim: true,
       index: true,
     },
+    // Email of the user
     email: {
       type: String,
       required: true,
@@ -19,49 +23,57 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
+    // Full name of the user
     fullName: {
       type: String,
       required: true,
       trim: true,
       index: true,
     },
+    // Avatar URL of the user (Cloudinary URL)
     avatar: {
-      type: String, // cloudnary url
+      type: String,
       required: true,
     },
+    // Cover image URL of the user (Cloudinary URL)
     coverImage: {
-      type: String, // cloudnary url
+      type: String,
     },
+    // Reference to the watch history of the user (Video model)
     watchHistory: {
       type: Schema.Types.ObjectId,
       ref: "Video",
     },
+    // Password of the user (encrypted)
     password: {
       type: String,
       required: [true, "Password is required"],
     },
+    // Refresh token for user authentication
     refreshToken: {
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true } // Timestamps for creation and update
 );
 
-// pre hook of mongoose, {do the task before save (here encryption)}
+// Middleware to run before saving user data, encrypts the password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
 
   next();
 });
 
+// Method to check if the entered password is correct
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+// Method to generate access token for user authentication
 userSchema.methods.generateAccessToken = function () {
-  jwt.sign(
+  return jwt.sign(
     {
       _id: this._id,
       email: this.email,
@@ -74,8 +86,10 @@ userSchema.methods.generateAccessToken = function () {
     }
   );
 };
+
+// Method to generate refresh token for user authentication
 userSchema.methods.generateRefreshToken = function () {
-  jwt.sign(
+  return jwt.sign(
     {
       _id: this._id,
     },
@@ -86,4 +100,5 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
+// Create and export the User model
 export const User = mongoose.model("User", userSchema);
