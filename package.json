@@ -11,7 +11,8 @@
   ],
   "license": "ISC",
   "scripts": {
-    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
+    "pretty": "npx prettier . --write"
   },
   "devDependencies": {
     "dotenv": "^16.4.5",

@@ -5,7 +5,6 @@ export const asyncHandler = (requestHandler) => {
   };
 };
 
-
 /*              TRY - CATCH CODE 
 //below is a higher order function 
 const asyncHandler = (fn) => {
