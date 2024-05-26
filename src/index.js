@@ -1,4 +1,3 @@
-// require('dotenv').config({path: './env'})
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";
@@ -43,3 +42,4 @@ const app = express();
 })()
 
 */
+// require('dotenv').config({path: './env'})
