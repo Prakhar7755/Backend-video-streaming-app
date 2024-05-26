@@ -32,7 +32,8 @@ package-lock.json
 bun.lockb
 # Bower dependency directory (https://bower.io/)
 bower_components
-
+user.controller.md
+user.controller2.js
 # node-waf configuration
 .lock-wscript
 
