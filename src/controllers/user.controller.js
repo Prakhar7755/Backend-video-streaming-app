@@ -9,6 +9,9 @@ const generateAccessAndRefreshTokens = async (userId) => {
   try {
     // Find user by ID
     const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
     // Generate access and refresh tokens for the user
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
@@ -103,7 +106,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
   // Validate if email/username is provided
-  if (!username || !email) {
+  if (!username && !email) {
     throw new ApiError(400, "Username or email is required");
   }
 

@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"; // Plugin for aggregation pipeline support
 
-// Define the schema for the video model
 const videoSchema = new mongoose.Schema(
   {
     // URL of the video file (Cloudinary URL)
