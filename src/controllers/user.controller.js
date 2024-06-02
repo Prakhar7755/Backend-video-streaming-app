@@ -162,7 +162,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: { refreshToken: undefined },
+      $unset: { refreshToken: 1 /*removes the field from the document*/ },
     },
     { new: true }
   );
@@ -181,38 +181,48 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out"));
 });
 
+// Refreshes access token using refresh token
 const refreshAccessToken = asyncHandler(async (req, res) => {
+  // Extract refresh token from cookies or request body
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
 
+  // If refresh token is not provided, throw unauthorized error
   if (!incomingRefreshToken) {
     throw new ApiError(401, "unauthorized request");
   }
 
   try {
+    // Verify incoming refresh token
     const decodedToken = await jwt.verify(
       incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET
     );
 
+    // Find user associated with the decoded refresh token
     const user = await User.findById(decodedToken?._id);
 
+    // If user not found, throw invalid refresh token error
     if (!user) {
       throw new ApiError(401, "Invalid refresh Token");
     }
 
+    // If incoming refresh token does not match user's refresh token, throw expired or used error
     if (incomingRefreshToken !== user?.refreshToken) {
       throw new ApiError(401, "refresh Token is expired or used");
     }
 
+    // Set cookie options for secure transmission
     const options = {
       httpOnly: true,
       secure: true,
     };
 
+    // Generate new access token and refresh token
     const { accessToken, newRefreshToken } =
       await generateAccessAndRefreshTokens(user._id);
 
+    // Send response with new tokens
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
@@ -225,45 +235,54 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
+    // Catch and throw any errors occurred during token refresh
     throw new ApiError(401, "Invalid refresh token" || error?.message);
   }
 });
 
+// Changes user's current password
 const changeCurrentPassword = asyncHandler(async (req, res) => {
+  // Extract old and new passwords from request body
   const { oldPassword, newPassword /* ,confirmPassword */ } = req.body;
 
-  /* if (newPassword !== confirmPassword) {
-    throw new ApiError
-  } */
-
+  // Find user by ID
   const user = await User.findById(req.user?._id);
 
+  // Check if the provided old password is correct
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
   if (!isPasswordCorrect) {
     throw new ApiError(400, "Invalid old password");
   }
 
+  // Set new password and save user
   user.password = newPassword;
   await user.save({ validateBeforeSave: false });
 
+  // Return success response
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Password Changed successfully"));
 });
 
+// Gets details of the current user
 const getCurrentUser = asyncHandler(async (req, res) => {
+  // Return current user details
   return res
     .status(200)
     .json(200, req.user, "current user fetched successfully");
 });
 
+// Updates account details of the current user
 const updateAccountDetails = asyncHandler(async (req, res) => {
+  // Extract full name and email from request body
   const { fullName, email } = req.body;
 
+  // If full name or email is missing, throw error
   if (!fullName || !email) {
     throw new ApiError(400, "All fields are required");
   }
 
+  // Update user's account details
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -275,23 +294,31 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password");
 
+  // Return success response with updated user details
   return res
     .status(200)
     .json(new ApiResponse(200, user, "Account details updated successfully"));
 });
 
+// Updates user's avatar
 const updateUserAvatar = asyncHandler(async (req, res) => {
+  // Get path of uploaded avatar file
   const avatarLocalPath = req.file?.path;
 
+  // If avatar file is missing, throw error
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is missing");
   }
+
+  // Upload avatar to Cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
 
+  // If error occurred while uploading, throw error
   if (!avatar.url) {
     throw new ApiError(400, "Error while uploading on avatar");
   }
 
+  // Update user's avatar URL
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -302,23 +329,31 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password");
 
+  // Return success response with updated user details
   return res
     .status(200)
     .json(new ApiResponse(200, user, "User avatar updated successfully"));
 });
 
+// Updates user's cover Image
 const updateUserCoverImage = asyncHandler(async (req, res) => {
+  // Get path of uploaded cover image file
   const coverImageLocalPath = req.file?.path;
 
+  // If cover image file is missing, throw error
   if (!coverImageLocalPath) {
     throw new ApiError(400, "Cover Image file is missing");
   }
+
+  // Upload cover image to Cloudinary
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
+  // If error occurred while uploading, throw error
   if (!coverImage.url) {
     throw new ApiError(400, "Error while uploading on coverImage");
   }
 
+  // Update user's cover image URL
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -329,22 +364,27 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password");
 
+  // Return success response with updated user details
   return res
     .status(200)
     .json(new ApiResponse(200, user, "User coverImage updated successfully"));
 });
 
+// Gets user's channel profile details
 const getUserChannelProfile = asyncHandler(async (req, res) => {
+  // Extract username from request parameters
   const { username } = req.params;
 
+  // If username is missing or empty, throw error
   if (!username?.trim()) {
     throw new ApiError(400, "Username is missing");
   }
 
+  // Aggregate query to get user's channel profile
   const channel = await User.aggregate([
     {
       $match: {
-        /*here we filtered a document*/ username: username?.toLowerCase(),
+        username: username?.toLowerCase(),
       },
     },
     {
@@ -394,11 +434,12 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     },
   ]);
 
-  // console.log(channel);
+  // If channel doesn't exist, throw error
   if (!channel?.length) {
     throw new ApiError(404, "channel doesn't exist");
   }
 
+  // Return success response with user's channel profile
   return res
     .status(200)
     .json(
@@ -406,7 +447,9 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     );
 });
 
+// Gets user's watch history
 const getWatchHistory = asyncHandler(async (req, res) => {
+  // Aggregate query to get user's watch history
   const user = await User.aggregate([
     {
       $match: {
@@ -449,10 +492,12 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     },
   ]);
 
+  // If watch history not found, throw error
   if (!user[0]?.watchHistory) {
     throw new ApiError(404, "failed to fetch watch history");
   }
 
+  // Return success response with user's watch history
   return res
     .status(200)
     .json(
