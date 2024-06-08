@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
-const tweetSchema = new mongoose.Schema(
+const tweetSchema = new Schema(
   {
     content: {
       type: String,
-      req: true,
+      required: true,
     },
     owner: {
       type: Schema.Types.ObjectId,

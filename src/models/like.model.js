@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const likeSchema = new mongoose.Schema(
+const likeSchema = new Schema(
   {
     video: {
       type: Schema.Types.ObjectId,
@@ -10,13 +10,13 @@ const likeSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "Comment",
     },
-    likedBy: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
     tweet: {
       type: Schema.Types.ObjectId,
       ref: "Tweet",
+    },
+    likedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   { timestamps: true }
