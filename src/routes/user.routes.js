@@ -1,8 +1,10 @@
-import { Router } from "express";
+import express from "express";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 import {
+  registerUser,
   loginUser,
   logoutUser,
-  registerUser,
   refreshAccessToken,
   changeCurrentPassword,
   getCurrentUser,
@@ -12,14 +14,14 @@ import {
   getUserChannelProfile,
   getWatchHistory,
 } from "../controllers/user.controller.js";
-import { upload } from "../middlewares/multer.middleware.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
 
-const router = Router();
+const router = express.Router();
 
+// routes
 router.route("/register").post(
   upload.fields([
     {
+      // using middleware for uploading avatar anf coverImage using multer
       name: "avatar",
       maxCount: 1,
     },
@@ -30,11 +32,12 @@ router.route("/register").post(
   ]),
   registerUser
 );
+
 router.route("/login").post(loginUser);
 
-// secured routes
+//secured routes
 router.route("/logout").post(verifyJWT, logoutUser);
-router.route("/refresh-token").post(refreshAccessToken);
+router.route("/refresh-token").post(refreshAccessToken); // we didn't need jwt verify as its already done in the controller
 
 router.route("/change-password").post(verifyJWT, changeCurrentPassword);
 

@@ -6,6 +6,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+yarn.lock
+bun.lockb
+package-lock.json
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -22,18 +25,16 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 *.lcov
-bun.lockb
-yarn.lock
+
 # nyc test coverage
 .nyc_output
-package-lock.json
+
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
-bun.lockb
+
 # Bower dependency directory (https://bower.io/)
 bower_components
-user.controller.md
-user.controller2.js
+
 # node-waf configuration
 .lock-wscript
 
@@ -73,6 +74,7 @@ web_modules/
 
 # dotenv environment variables file
 .env
+.env.Local
 .env.test
 .env.production
 
