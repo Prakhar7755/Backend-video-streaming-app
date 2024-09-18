@@ -31,7 +31,7 @@ This repository contains the backend code for a video streaming application simi
 1. Clone the repository:
 
    ```bash
-  git clone https://github.com/Prakhar7755/video-streaming-app-BACKEND.git
+     git clone https://github.com/Prakhar7755/video-streaming-app-BACKEND.git
    ```
 
 2. Navigate to the project directory:
@@ -50,21 +50,20 @@ This repository contains the backend code for a video streaming application simi
 
    ```
    PORT=8000
-MONGODB_URI=
-CORS_ORIGIN=*
+   MONGODB_URI=
+   CORS_ORIGIN=*
 
-ACCESS_TOKEN_SECRET=
-ACCESS_TOKEN_EXPIRY=
+   ACCESS_TOKEN_SECRET=
+   ACCESS_TOKEN_EXPIRY=
 
+   REFRESH_TOKEN_SECRET=
+   REFRESH_TOKEN_EXPIRY=
 
-REFRESH_TOKEN_SECRET=
-REFRESH_TOKEN_EXPIRY=
+   NODE_ENV=""
 
-NODE_ENV=""
-
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+   CLOUDINARY_CLOUD_NAME=
+   CLOUDINARY_API_KEY=
+   CLOUDINARY_API_SECRET=
    ```
 
 5. Start the server:
